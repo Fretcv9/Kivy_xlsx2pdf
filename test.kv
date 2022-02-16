@@ -1,0 +1,72 @@
+#-*- coding: utf-8 -*-
+
+
+TextWidget: # ルートに追加
+
+<TextWidget>:
+    BoxLayout:
+        orientation: 'vertical'
+        size: root.size
+
+
+        BoxLayout:
+            size_hint_y: 0.3
+            padding: 20,0,20, 10
+            Button:
+                id: button1
+                text: "excelファイル確認"
+                text_size: self.size
+                halign: 'center'
+                valign: 'middle'
+                font_size: 50
+                on_press: root.buttonClicked()  # ボタンをクリックした時
+
+            Button:
+                id: button2
+                text: "PDF作成"
+                halign: 'center'
+                valign: 'middle'
+                font_size: 50
+                on_press: root.buttonClicked2()  # ボタンをクリックした時
+                    # ボタン
+            Button:
+                text: "OPEN"
+                halign: 'center'
+                valign: 'middle'
+                font_size: 50
+                on_press: root.on_command()
+
+            #Button:
+            #    id: button3
+            #    text: "night"
+            #    font_size: 68
+            #    on_press: root.buttonClicked3()  # ボタンをクリックした時
+
+        # ラベル
+        Label:
+            size_hint_y: 0.7
+            id: label1
+            font_size: 68
+            text: root.text
+            color: root.color
+
+<PopupMenu>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        #FileChooserListView:
+        FileChooserIconView:
+            id: filechooser
+
+        Label:
+            text: 'Please Close Button'
+            center: root.center
+
+        BoxLayout:
+            Button:
+                text: 'Close'
+                on_release: root.popup_close()
+            Button:
+                text: "Load"
+                on_release: root.load(filechooser.path,filechooser.selection)
