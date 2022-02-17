@@ -1,107 +1,74 @@
-#-*- coding: utf-8 -*-
-
 from kivy.app import App
-from kivy.uix.widget import Widget
-
-from kivy.properties import StringProperty,ListProperty
-from kivy.uix.floatlayout import FloatLayout
-
+from kivy.uix.button import Button
+from kivy.uix.button import Label
+from kivy.core.window import Window
+from kivy.uix.boxlayout import BoxLayout
 
 #デバッグ用
 from icecream import ic
 
-import pathlib
-import glob
-import os
+#merge
+import PyPDF2
+import xlwings as xw
 
 #日本語表示用
 import japanize_kivy
 
-from kivy.uix.popup import Popup
-from kivy.uix.boxlayout import BoxLayout
-from kivy.core.window import Window
-from kivy.properties import ObjectProperty
 
-#カレントディレクトリ取得
-P_current = pathlib.Path()
-P_current_abs = P_current.resolve()
-
-print(str(P_current_abs.cwd()))
-
-#ファイルを配列に格納
-file_list = glob.glob(str(P_current_abs.cwd())+ str(os.sep) + r'*.txt')
-#file_list = glob.glob(os.path.join(str(P_current_abs.cwd()), os.sep + '*.txt'))
-
-
-print(glob.glob(str(P_current_abs.cwd())+ str(os.sep)+ r'*.txt'))
-print(str(len(file_list)))
-
-renketu_list = []
-
-for i in range(len(file_list)):
-    p_sub = pathlib.Path(file_list[i])
-    p_abs = p_sub.resolve()
-    print(str(p_abs.name))
-    renketu_list.append(str(p_abs.name))
-    #renketu = str(renketu) + str(p_abs.name)¥n
-
-print("連結リストチェック")
-print(str(len(renketu_list)))
-for i in range(len(renketu_list)):
-    renketu_print = renketu_list[i]
-    ic(renketu_print)
-
-
-
-#print(renketu)
-#renketu = "\n".join(renketu_list)
-#print(renketu) 
-
-class PopupMenu(FloatLayout):
-    popup_close = ObjectProperty(None)
-    load = ObjectProperty(None)
-
-class TextWidget(Widget):
-    text  = StringProperty()
-    color = ListProperty([1,1,1,1])
-    
-    def on_command(self, **kwargs):
-        content = PopupMenu(load = self.load, popup_close = self.popup_close)
-        self._popup = Popup( title="読み込み中", content=content, size_hint=(0.9,0.9))
-        self._popup.open()    
-    
-    def popup_close(self):
-        self._popup.dismiss()
-
-    def load(self, path, filename):
-        self.ids['button1'].text = str(filename[0])
-        self.popup_close()
-        with open(os.path.join(path, filename[0])) as file:
-            self.ids['button1'].text = str(file.read())
-    
+class DropFile(Button):
     def __init__(self, **kwargs):
-        super(TextWidget, self).__init__(**kwargs)
-        self.text = "{}".format(renketu_print) 
+        super(DropFile, self).__init__(**kwargs)
 
-    def buttonClicked(self):
-        self.text = str(P_current_abs.cwd())
-        self.color = [1, 0, 0 , 1]
+        # get app instance to add function from widget
+        app = App.get_running_app() 
 
-    def buttonClicked2(self):
-        self.text = 'Hello'
-        self.color = [0, 1, 0 , 1 ]
+        # add function to the list
+        app.drops.append(self.on_dropfile)
 
-    def buttonClicked3(self):
-        self.text = 'Good evening'
-        self.color = [0, 0, 1 , 1 ]
+        ic(app)
 
-class TestApp(App):
+    def on_dropfile(self, widget, filename):
+        # a function catching a dropped file
+        # if it's dropped in the widget's area
+        if self.collide_point(*Window.mouse_pos):
+            # on_dropfile's filename is bytes (py3)
+            self.text = filename.decode('utf-8')
+            ic(filename.decode('utf-8'))
+            #read workbook
+            book = xw.Book(filename.decode('utf-8'))
+    
+            #ブック全体
+            #save book by pdf
+            book.to_pdf(show=False)
+
+            #close excel
+            app = xw.apps.active 
+            app.quit()
+
+
+class DropApp(App):
     def build(self):
-        self.title = 'テスト'
-        return TextWidget()
-    #def __init__(self, **kwargs):
-    #    super(TestApp, self).__init__(**kwargs)
-    #    self.title = 'excel_to_PDF'
+        # set an empty list that will be later populated
+        # with functions from widgets themselves
+        self.drops = []
+
+        # bind handling function to 'on_dropfile'
+        Window.bind(on_dropfile=self.handledrops)
+
+        box = BoxLayout()
+        dropleft = DropFile(text='EXCELファイルをDRAG&DROPしてください。')
+        box.add_widget(dropleft)
+        return box
+
+    def handledrops(self, *args):
+        # this will execute each function from list with arguments from
+        # Window.on_dropfile
+        #
+        # make sure `Window.on_dropfile` works on your system first,
+        # otherwise the example won't work at all
+        for func in self.drops:
+            func(*args)
+
 
 if __name__ == '__main__':
-    TestApp().run()
+    DropApp().run()
