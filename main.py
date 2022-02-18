@@ -4,6 +4,8 @@ from kivy.uix.button import Label
 from kivy.core.window import Window
 from kivy.uix.boxlayout import BoxLayout
 
+#MacBookAirより
+
 #デバッグ用
 from icecream import ic
 
