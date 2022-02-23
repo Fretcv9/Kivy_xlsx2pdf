@@ -51,7 +51,7 @@ for i in range(len(renketu_list)):
     renketu_print = renketu_list[i]
     ic(renketu_print)
 
-#"gittest"
+
 
 #print(renketu)
 #renketu = "\n".join(renketu_list)
