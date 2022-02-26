@@ -69,6 +69,7 @@ class DroppApp(App):
         #
         # make sure `Window.on_dropfile` works on your system first,
         # otherwise the example won't work at all
+        print("in handledrops")
         for func in self.drops:
             func(*args)
 
