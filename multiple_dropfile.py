@@ -23,6 +23,7 @@ class DropFile(Button):
         app = App.get_running_app() 
 
         # add function to the list
+        ic(self.on_dropfile)
         app.drops.append(self.on_dropfile)
 
         ic(app)
