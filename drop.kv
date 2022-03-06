@@ -1,0 +1,26 @@
+#-*- coding: utf-8 -*-
+
+
+DropWidget: # ルートに追加
+
+
+<DropWidget>:
+# 画面全体のレイアウト
+    orientation: "vertical" # オブジェクトを水平に配置
+    ActionBar:
+        pos: (0,0)
+        ActionView:
+            ActionPrevious:
+                title: 'xlsx2pdf'
+                with_previous: False # trueだと頭のロゴがボタンになる？
+            ActionButton:
+                text: 'EXIT'
+                on_press: app.root.actionbutton_closeCliked()
+    DropFile:
+        text: 'EXCELファイルをDRAG&DROPしてください。(KV)'
+    # Label:
+    #     id: label1
+    #     text: 'hellooooooooooo'
+    # Label:
+    #     id: label2
+    #     text: 'KKKKKK'
